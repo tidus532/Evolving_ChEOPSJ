@@ -1,0 +1,4 @@
+-------------------------------------------------------
+My notes and remarks after reading the code in an hour:
+-------------------------------------------------------
+* there are #packages
