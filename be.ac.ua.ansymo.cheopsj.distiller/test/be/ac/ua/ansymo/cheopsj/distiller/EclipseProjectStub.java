@@ -1,4 +1,5 @@
 package be.ac.ua.ansymo.cheopsj.distiller;
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
@@ -29,7 +30,12 @@ import org.eclipse.core.runtime.content.IContentTypeMatcher;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 
 public class EclipseProjectStub implements IProject {
-
+	private String repo_path;
+	
+	public EclipseProjectStub(String repo_path){
+		this.repo_path = repo_path;
+	}
+	
 	@Override
 	public boolean exists(IPath path) {
 		// TODO Auto-generated method stub
@@ -282,14 +288,11 @@ public class EclipseProjectStub implements IProject {
 
 	@Override
 	public URI getLocationURI() {
-		try {
-			URI base = new URI("file:///tmp");
-			return base;
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+			File file = new File(this.repo_path);
+			return file.toURI();
+			//URI base = new URI("file://");
+			//URI loc = base.resolve("/tmp/svn-test");
+
 	}
 
 	@Override
