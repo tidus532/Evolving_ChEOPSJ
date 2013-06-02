@@ -21,6 +21,7 @@ import be.ac.ua.ansymo.cheopsj.distiller.popup.actions.DistillChanges;
 
 import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNException;
+import org.tmatesoft.svn.core.SVNProperties;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.auth.BasicAuthenticationManager;
 import org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory;
@@ -56,7 +57,7 @@ public class ChangeDistillerBaseTest extends TestCase{
 
 		// create a local working copy.
 		SVNClientManager clientManager = SVNClientManager.newInstance();
-		;
+		
 		SVNUpdateClient updateClient = clientManager.getUpdateClient();
 		File local_dir = new File(REPO_LOCAL_PATH);
 		// local_dir.deleteOnExit();
@@ -74,13 +75,13 @@ public class ChangeDistillerBaseTest extends TestCase{
 		File repo_dir = new File(REPO_PATH);
 		File local_dir = new File(REPO_LOCAL_PATH);
 		// delete repository and local working copy.
-		try {
-			FileUtils.deleteDirectory(local_dir);
-			FileUtils.deleteDirectory(repo_dir);
-		} catch (IOException e) {
+		//try {
+			//FileUtils.deleteDirectory(local_dir);
+			//FileUtils.deleteDirectory(repo_dir);
+		//} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			//e.printStackTrace();
+		//}
 	}
 
 	public void runDistiller() {
@@ -138,26 +139,75 @@ public class ChangeDistillerBaseTest extends TestCase{
 	 * 
 	 * NOTE: subdirectories are not supported, only files.
 	 */
+	@SuppressWarnings("deprecation")
 	public void doCommit(){
+		SVNRepositoryFactoryImpl.setup(); 
+		FSRepositoryFactory.setup(); 
+		DAVRepositoryFactory.setup(); 
+		
 		String file = this.getClass().getResource(RES_DIR).getFile();
 		File local_dir = new File(REPO_LOCAL_PATH);
+		SVNClientManager clientManager = SVNClientManager.newInstance();
+		SVNCommitClient commitClient = clientManager.getCommitClient();
+		SVNStatusClient statusClient = clientManager.getStatusClient(); 
+		SVNWCClient wcClient = clientManager.getWCClient(); 
+		SVNUpdateClient updateClient = clientManager.getUpdateClient();
 		
-		//copy files
 		int i = 1;
 		File next_commit = new File(file+"/"+1);
 		while(next_commit.exists() && next_commit.isDirectory()){
+			//Delete files that are not present in the directory anymore.
 			String[] commit_file_list = next_commit.list();
 			String[] local_file_list = local_dir.list();
 			ArrayList<String> commit_list = new ArrayList<String>(Arrays.asList(commit_file_list));
 			ArrayList<String> local_list = new ArrayList<String>(Arrays.asList(local_file_list));
 			local_list.removeAll(commit_list);
+			
 			for(String file_del : local_list){
-				File del = new File(REPO_LOCAL_PATH+"/"+file_del);
-				del.delete();
+				if(!file_del.equals(".svn")){
+					//Delete file from local repo.
+					File del = new File(REPO_LOCAL_PATH+"/"+file_del);
+					System.out.println(del.toString());
+					
+					try {
+						SVNURL[] svnpath = {SVNURL.fromFile(del)};
+						wcClient.doDelete(del, false, true, false);
+					} catch (SVNException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 			}
+			
+			//Adding new files.
+			local_list = new ArrayList<String>(Arrays.asList(local_file_list));
+			commit_list = new ArrayList<String>(Arrays.asList(commit_file_list));
+			commit_list.removeAll(local_list);
 			try {
 				FileUtils.copyDirectory(next_commit, local_dir);
+				SVNProperties properties = new SVNProperties();
+				for(String commit : commit_list){
+					if(!commit.equals(".svn")){
+						File file_add = new File(REPO_LOCAL_PATH+"/"+commit);
+						try {
+							wcClient.doAdd(file_add, false, false, false, false, false);
+						} catch (SVNException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
 			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			//Do commit and update.
+			File[] temp = {local_dir};
+			try {
+				commitClient.doCommit(temp, true, "commit", null, null, false, false, SVNDepth.INFINITY);
+				updateClient.doUpdate(local_dir, SVNRevision.HEAD, SVNDepth.INFINITY, false, false);
+			} catch (SVNException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
