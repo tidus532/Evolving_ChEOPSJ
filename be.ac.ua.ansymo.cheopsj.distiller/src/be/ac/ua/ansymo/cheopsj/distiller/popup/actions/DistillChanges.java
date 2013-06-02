@@ -46,7 +46,7 @@ import be.ac.ua.ansymo.cheopsj.model.changes.Remove;
 
 
 public class DistillChanges implements IObjectActionDelegate {
-
+	protected static String REPO_PATH = "file:///tmp/svn-test-repo";
 	private IProject selectedProject;
 	private SVNConnector svnConnector;
 	
@@ -135,8 +135,9 @@ public class DistillChanges implements IObjectActionDelegate {
 			//TODO record additions for initial project!
 			File file = new File(selectedProject.getLocationURI());
 			svnConnector = new SVNConnector("", "");
+			svnConnector.setSVNURL(REPO_PATH);
 			svnConnector.initialize();
-
+			
 			//long rev = svnConnector.getCurrentRevision(file);//Get current revision number.
 			//long targetRev = svnConnector.getHeadRevisionNumber(file);//total nr of revisions
 			//long targetRev = 1000;

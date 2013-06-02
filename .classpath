@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="be.ac.ua.ansymo.cheopsj.changerecorders/src"/>
+	<classpathentry kind="src" path="be.ac.ua.ansymo.cheopsj.changerecorders/test"/>
+	<classpathentry kind="src" path="be.ac.ua.ansymo.cheopsj.changerecorders/testworkspace/TestProject/src"/>
+	<classpathentry excluding="test/resources/test1/2/|test/resources/test1/1/|test/|src/|test/resources/test1/3/" kind="src" path="be.ac.ua.ansymo.cheopsj.distiller"/>
+	<classpathentry kind="src" path="be.ac.ua.ansymo.cheopsj.distiller/src"/>
+	<classpathentry excluding="resources/test1/2/|resources/test1/1/|resources/test1/3/" kind="src" path="be.ac.ua.ansymo.cheopsj.distiller/test"/>
+	<classpathentry kind="src" path="be.ac.ua.ansymo.cheopsj.distiller/test/resources/test1/1"/>
+	<classpathentry kind="src" path="be.ac.ua.ansymo.cheopsj.distiller/test/resources/test1/2"/>
+	<classpathentry kind="src" path="be.ac.ua.ansymo.cheopsj.distiller/test/resources/test1/3"/>
+	<classpathentry kind="src" path="be.ac.ua.ansymo.cheopsj.logger/src"/>
+	<classpathentry kind="src" path="be.ac.ua.ansymo.cheopsj.logger/test"/>
+	<classpathentry kind="src" path="be.ac.ua.ansymo.cheopsj.model.ui/src"/>
+	<classpathentry kind="src" path="be.ac.ua.ansymo.cheopsj.model.ui/test"/>
+	<classpathentry kind="src" path="be.ac.ua.ansymo.cheopsj.model/src"/>
+	<classpathentry kind="src" path="be.ac.ua.ansymo.cheopsj.model/test"/>
+	<classpathentry kind="src" path="be.ac.ua.ansymo.cheopsj.testtool/src"/>
+	<classpathentry kind="src" path="be.ac.ua.ansymo.cheopsj.testtool/test"/>
+	<classpathentry kind="lib" path="be.ac.ua.ansymo.cheopsj.changerecorders/lib/commons-collections-3.2.1.jar"/>
+	<classpathentry kind="lib" path="be.ac.ua.ansymo.cheopsj.changerecorders/lib/mockito-all-1.9.5-rc1.jar"/>
+	<classpathentry kind="lib" path="be.ac.ua.ansymo.cheopsj.logger/lib/commons-collections-3.2.1.jar"/>
+	<classpathentry kind="lib" path="be.ac.ua.ansymo.cheopsj.logger/lib/ejb3-persistence.jar"/>
+	<classpathentry kind="lib" path="be.ac.ua.ansymo.cheopsj.model/lib/famix.jar"/>
+	<classpathentry kind="lib" path="be.ac.ua.ansymo.cheopsj.model/lib/hsqldb.jar"/>
+	<classpathentry kind="lib" path="be.ac.ua.ansymo.cheopsj.update/artifacts.jar"/>
+	<classpathentry kind="lib" path="be.ac.ua.ansymo.cheopsj.update/content.jar"/>
+	<classpathentry kind="lib" path="be.ac.ua.ansymo.cheopsj.update/features/be.ac.ua.ansymo.cheopsj_1.0.1.jar"/>
+	<classpathentry kind="lib" path="be.ac.ua.ansymo.cheopsj.update/plugins/be.ac.ua.ansymo.cheopsj.branding_1.0.1.jar"/>
+	<classpathentry kind="lib" path="be.ac.ua.ansymo.cheopsj.update/plugins/be.ac.ua.ansymo.cheopsj.changerecorders_1.0.1.jar"/>
+	<classpathentry kind="lib" path="be.ac.ua.ansymo.cheopsj.update/plugins/be.ac.ua.ansymo.cheopsj.distiller_1.0.1.jar"/>
+	<classpathentry kind="lib" path="be.ac.ua.ansymo.cheopsj.update/plugins/be.ac.ua.ansymo.cheopsj.logger_1.0.1.jar"/>
+	<classpathentry kind="lib" path="be.ac.ua.ansymo.cheopsj.update/plugins/be.ac.ua.ansymo.cheopsj.model_1.0.1.jar"/>
+	<classpathentry kind="lib" path="be.ac.ua.ansymo.cheopsj.update/plugins/be.ac.ua.ansymo.cheopsj.model.ui_1.0.1.jar"/>
+	<classpathentry kind="lib" path="be.ac.ua.ansymo.cheopsj.update/plugins/be.ac.ua.ansymo.cheopsj.testtool_1.0.1.jar"/>
+	<classpathentry kind="lib" path="be.ac.ua.ansymo.cheopsj.update/plugins/org.evolizer.changedistiller_1.0.0.jar"/>
+	<classpathentry kind="lib" path="org.evolizer.changedistiller/changedistiller-0.0.1-SNAPSHOT-jar-with-dependencies.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="be.ac.ua.ansymo.cheopsj.model/bin"/>
+</classpath>

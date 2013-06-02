@@ -1,4 +1,4 @@
-package be.ac.ua.ansymo.cheopsj.distiller;
+package distiller.test;
 
 import static org.junit.Assert.*;
 
@@ -17,7 +17,6 @@ import javax.print.DocFlavor.URL;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
-import be.ac.ua.ansymo.cheopsj.distiller.popup.actions.DistillChanges;
 
 import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNException;
@@ -31,6 +30,8 @@ import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
 import org.tmatesoft.svn.core.wc.*;
 import org.tmatesoft.svn.core.wc.admin.SVNAdminClient;
 import org.apache.commons.io.FileUtils;
+
+import be.ac.ua.ansymo.cheopsj.distiller.popup.actions.DistillChanges;
 
 public class ChangeDistillerBaseTest extends TestCase{
 	protected static String REPO_PATH = "/tmp/svn-test-repo";
@@ -75,13 +76,13 @@ public class ChangeDistillerBaseTest extends TestCase{
 		File repo_dir = new File(REPO_PATH);
 		File local_dir = new File(REPO_LOCAL_PATH);
 		// delete repository and local working copy.
-		//try {
-			//FileUtils.deleteDirectory(local_dir);
-			//FileUtils.deleteDirectory(repo_dir);
-		//} catch (IOException e) {
+		try {
+			FileUtils.deleteDirectory(local_dir);
+			FileUtils.deleteDirectory(repo_dir);
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			//e.printStackTrace();
-		//}
+			e.printStackTrace();
+		}
 	}
 
 	public void runDistiller() {

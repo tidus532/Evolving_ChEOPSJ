@@ -177,5 +177,9 @@ public class SVNConnector {
         }
         return "";
 	}
+	
+	public void setSVNURL(String url){
+		this.fSVNUrl = url;
+	}
 
 }

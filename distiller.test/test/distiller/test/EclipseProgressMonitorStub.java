@@ -1,4 +1,4 @@
-package be.ac.ua.ansymo.cheopsj.distiller;
+package distiller.test;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 public class EclipseProgressMonitorStub implements IProgressMonitor{
