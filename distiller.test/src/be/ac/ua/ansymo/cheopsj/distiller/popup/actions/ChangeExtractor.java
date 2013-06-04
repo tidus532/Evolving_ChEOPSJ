@@ -32,24 +32,40 @@ import be.ac.ua.ansymo.cheopsj.model.changes.AtomicChange;
 import be.ac.ua.ansymo.cheopsj.model.changes.Remove;
 
 public class ChangeExtractor {
+	public static int newFile;
+	public static int deletedFile;
+	public static int modifiedFile;
 
+	
+	
 	private String changeIntent;
 	private Date changeDate;
 	private String changeUser;
+	
+	public static void resetCounters(){
+		newFile = 0;
+		deletedFile = 0;
+		modifiedFile = 0;
+	}
 
 	public ChangeExtractor(String message, Date date, String user) {
 		changeIntent = message;
 		changeDate = date;
 		changeUser = user;
-		System.out.println("BYPASSED!");
+		//System.out.println("BYPASSED!");
 	}
 
 	//#############################
 	//###### CHANGEDISTILLER ######
 	//#############################
 
+	public ChangeExtractor() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public void convertChanges(List<SourceCodeChange> sourceCodeChanges) {
-		
+		//add counter to indicate that a modified file is being processed.
+		modifiedFile++;
 	}
 
 	//#############################
@@ -57,11 +73,9 @@ public class ChangeExtractor {
 	//#############################
 
 	public void storeMethodInvocationRemovals(String contents) {
-		
 	}
 
 	public void storeMethodRemoval(String contents) {
-		
 	}
 
 	public void storeFieldRemovals(String contents) {
@@ -69,7 +83,8 @@ public class ChangeExtractor {
 	}
 
 	public void storeClassRemoval(String contents) {
-		
+		//add counter to indicate that a a file is deleted.
+		deletedFile++;
 	}
 
 	private void storePackageRemoval(PackageDeclaration pack) {
@@ -87,7 +102,7 @@ public class ChangeExtractor {
 	}
 
 	public void storeMethodAdditions(String contents) {
-		
+
 	}
 
 	public void storeLocalVariableAdditions(MethodDeclaration method){
@@ -99,7 +114,9 @@ public class ChangeExtractor {
 	}
 
 	public void storeClassAddition(String contents) {
-		
+		//add counter to indicate that a new file is processed.
+		newFile++;
+
 	}
 
 	private TypeDeclaration getDeclaredType(String contents){

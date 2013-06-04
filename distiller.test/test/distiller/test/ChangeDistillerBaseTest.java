@@ -31,11 +31,12 @@ import org.tmatesoft.svn.core.wc.*;
 import org.tmatesoft.svn.core.wc.admin.SVNAdminClient;
 import org.apache.commons.io.FileUtils;
 
+import be.ac.ua.ansymo.cheopsj.distiller.popup.actions.ChangeExtractor;
 import be.ac.ua.ansymo.cheopsj.distiller.popup.actions.DistillChanges;
 
 public class ChangeDistillerBaseTest extends TestCase{
-	protected static String REPO_PATH = "/tmp/svn-test-repo";
-	protected static String REPO_LOCAL_PATH = "/tmp/svn-test-local";
+	protected static String REPO_PATH = "C:\\Users\\Daan\\workspace\\Evolving_ChEOPSJ\\distiller.test\\test\\svn-test-repo";
+	protected static String REPO_LOCAL_PATH = "C:\\Users\\Daan\\workspace\\Evolving_ChEOPSJ\\distiller.test\\test\\svn-test-local";
 	private static String RES_DIR = null;
 
 	public void setUp() {
@@ -70,9 +71,11 @@ public class ChangeDistillerBaseTest extends TestCase{
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		ChangeExtractor ce = new ChangeExtractor();
 	}
 
 	public void tearDown() {
+		ChangeExtractor.resetCounters();
 		File repo_dir = new File(REPO_PATH);
 		File local_dir = new File(REPO_LOCAL_PATH);
 		// delete repository and local working copy.
@@ -83,6 +86,7 @@ public class ChangeDistillerBaseTest extends TestCase{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		System.out.println("=============");
 	}
 
 	public void runDistiller() {
