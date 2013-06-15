@@ -18,9 +18,18 @@ import java.util.Arrays;
 
 import javax.print.DocFlavor.URL;
 
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 
 
 import org.tmatesoft.svn.core.SVNDepth;
@@ -38,18 +47,30 @@ import org.apache.commons.io.FileUtils;
 
 //import be.ac.ua.ansymo.cheopsj.distiller.popup.actions.ChangeExtractor;
 import be.ac.ua.ansymo.cheopsj.distiller.popup.actions.DistillChanges;
+import be.ac.ua.ansymo.cheopsj.logger.JavaProjectHelper;
 
 public class ChangeDistillerBaseTest extends TestCase{
 	protected static String REPO_PATH = "/tmp/svn-test-repo";
-	protected static String REPO_LOCAL_PATH = "/tmp/svn-test-local";
+	protected static String REPO_LOCAL_PATH = null;
 	private static String RES_DIR = null;
-
+	private IJavaProject jproject = null;
+	
 	public void setUp() {
 		// Init SVN lib
 		SVNRepositoryFactoryImpl.setup(); // for svn and svn+ssh protocols
 		DAVRepositoryFactory.setup(); // for http(s) protocol
 		FSRepositoryFactory.setup(); // for local access (file protocol).
-
+		
+		//create new project
+		try {
+			this.jproject  = JavaProjectHelper.createJavaProject("Test", "");
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		REPO_LOCAL_PATH = this.jproject.getProject().getLocation().toString();
+		System.out.println("LOCAL PATH:"+REPO_LOCAL_PATH);
+		
 		// Creating temporary repository.
 		File repo_dir = new File(REPO_PATH);
 		SVNURL tgtURL = null;
@@ -63,11 +84,8 @@ public class ChangeDistillerBaseTest extends TestCase{
 		}
 
 		// create a local working copy.
-		SVNClientManager clientManager = SVNClientManager.newInstance();
-		
-		SVNUpdateClient updateClient = clientManager.getUpdateClient();
+		SVNUpdateClient updateClient = SVNClientManager.newInstance().getUpdateClient();
 		File local_dir = new File(REPO_LOCAL_PATH);
-		// local_dir.deleteOnExit();
 		try {
 			updateClient.doCheckout(SVNURL.fromFile(repo_dir), local_dir,
 					SVNRevision.UNDEFINED, SVNRevision.HEAD, SVNDepth.INFINITY,
@@ -76,16 +94,16 @@ public class ChangeDistillerBaseTest extends TestCase{
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		ChangeExtractor ce = new ChangeExtractor();
+		//ChangeExtractor ce = new ChangeExtractor();
 	}
 
 	public void tearDown() {
-		ChangeExtractor.resetCounters();
+		//ChangeExtractor.resetCounters();
 		File repo_dir = new File(REPO_PATH);
 		File local_dir = new File(REPO_LOCAL_PATH);
 		// delete repository and local working copy.
 		try {
-			FileUtils.deleteDirectory(local_dir);
+			//FileUtils.deleteDirectory(local_dir);
 			FileUtils.deleteDirectory(repo_dir);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -95,7 +113,7 @@ public class ChangeDistillerBaseTest extends TestCase{
 	}
 
 	public void runDistiller() {
-
+		
 		// Modifying distillchanges
 		DistillChanges distiller = new DistillChanges();
 
@@ -106,7 +124,7 @@ public class ChangeDistillerBaseTest extends TestCase{
 			// Replace private selectedProject with a stub.
 			Field project = c.getDeclaredField("selectedProject");
 			project.setAccessible(true);
-			project.set(distiller, new EclipseProjectStub(REPO_LOCAL_PATH));
+			project.set(distiller, this.jproject.getProject());
 
 			// Launch private method iterateRevisions.
 			Method iterate = c.getDeclaredMethod("iterateRevisions",
@@ -158,25 +176,42 @@ public class ChangeDistillerBaseTest extends TestCase{
 		//String file = this.getClass().getResource(RES_DIR).getFile();
 		Bundle bundle = Platform.getBundle("be.ac.ua.ansymo.cheopsj.distiller");
 		java.net.URL fileURL = bundle.getEntry("resources/"+RES_DIR);
-		File local_dir = null;
+		File res_loc = null;
 		String file = fileURL.toString();
 		try {
-			local_dir = new File(FileLocator.resolve(fileURL).toURI());
+			res_loc = new File(FileLocator.resolve(fileURL).toURI());
 		} catch (URISyntaxException e1) {
 		    e1.printStackTrace();
 		} catch (IOException e1) {
 		    e1.printStackTrace();
 		}
+		File local_dir = new File(REPO_LOCAL_PATH);
 		
-		//File local_dir = new File(REPO_LOCAL_PATH);
 		SVNClientManager clientManager = SVNClientManager.newInstance();
 		SVNCommitClient commitClient = clientManager.getCommitClient();
 		SVNStatusClient statusClient = clientManager.getStatusClient(); 
 		SVNWCClient wcClient = clientManager.getWCClient(); 
 		SVNUpdateClient updateClient = clientManager.getUpdateClient();
 		
+		//Commit java project files.
+		File file_add = new File(REPO_LOCAL_PATH+"/.classpath");
+		try {
+			wcClient.doAdd(file_add, false, false, false, false, false);
+		} catch (SVNException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		file_add = new File(REPO_LOCAL_PATH+"/.project");
+		try {
+			wcClient.doAdd(file_add, false, false, false, false, false);
+		} catch (SVNException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		int i = 1;
-		File next_commit = new File(file+"/"+1);
+		File next_commit = new File(res_loc, ""+i);
 		while(next_commit.exists() && next_commit.isDirectory()){
 			//Delete files that are not present in the directory anymore.
 			String[] commit_file_list = next_commit.list();
@@ -186,7 +221,7 @@ public class ChangeDistillerBaseTest extends TestCase{
 			local_list.removeAll(commit_list);
 			
 			for(String file_del : local_list){
-				if(!file_del.equals(".svn")){
+				if(!(file_del.equals(".svn") || file_del.equals(".classpath") || file_del.equals(".project"))){
 					//Delete file from local repo.
 					File del = new File(REPO_LOCAL_PATH+"/"+file_del);
 					System.out.println(del.toString());
@@ -210,7 +245,7 @@ public class ChangeDistillerBaseTest extends TestCase{
 				SVNProperties properties = new SVNProperties();
 				for(String commit : commit_list){
 					if(!commit.equals(".svn")){
-						File file_add = new File(REPO_LOCAL_PATH+"/"+commit);
+						file_add = new File(REPO_LOCAL_PATH+"/"+commit);
 						try {
 							wcClient.doAdd(file_add, false, false, false, false, false);
 						} catch (SVNException e) {
@@ -227,14 +262,14 @@ public class ChangeDistillerBaseTest extends TestCase{
 			//Do commit and update.
 			File[] temp = {local_dir};
 			try {
-				commitClient.doCommit(temp, true, "commit", null, null, false, false, SVNDepth.INFINITY);
+				commitClient.doCommit(temp, true, "commit", null, null, false, true, SVNDepth.INFINITY);
 				updateClient.doUpdate(local_dir, SVNRevision.HEAD, SVNDepth.INFINITY, false, false);
 			} catch (SVNException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			i++;
-			next_commit = new File(file+"/"+i);
+			next_commit = new File(res_loc, ""+i);
 		}
 		//Commit changes
 	}

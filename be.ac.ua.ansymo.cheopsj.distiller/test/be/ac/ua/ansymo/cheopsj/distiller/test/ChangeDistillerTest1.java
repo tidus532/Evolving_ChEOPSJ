@@ -1,11 +1,19 @@
 package be.ac.ua.ansymo.cheopsj.distiller.test;
 
+import java.util.HashMap;
+import java.util.List;
+
 import org.junit.Test;
+import be.ac.ua.ansymo.cheopsj.model.ModelManager;
+import be.ac.ua.ansymo.cheopsj.model.changes.IChange;
 
 //import be.ac.ua.ansymo.cheopsj.distiller.popup.actions.ChangeExtractor;
 
 public class ChangeDistillerTest1 extends ChangeDistillerBaseTest{
-
+	private final static String CHANGE_ADD = "Addition";
+	private final static String CHANGE_MOD = "Modification";
+	private final static String CHANGE_DEL = "Removal";
+	
 	@Test
 	public void test3newClasses(){
 		this.setResourceDir("/test1");
@@ -14,9 +22,46 @@ public class ChangeDistillerTest1 extends ChangeDistillerBaseTest{
 		// rev 3: Class A, class B, Class C
 		this.doCommit();
 		this.runDistiller();
-		assertEquals(3, ChangeExtractor.newFile);
-		assertEquals(0, ChangeExtractor.deletedFile);
-		assertEquals(0, ChangeExtractor.modifiedFile);
+		try {
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//Check the model for all changes.
+		boolean seen_a = false;
+		boolean seen_b = false;
+		boolean seen_c = false;
+		
+		ModelManager manager = ModelManager.getInstance();
+		List<IChange> changes = manager.getChanges();
+		HashMap<?,?> map = (HashMap<?, ?>) manager.famixClassesMap;
+		System.out.println("MAP SIZE:"+map.size());
+		boolean test = manager.famixClassExists("A");
+		if(changes.size() == 0 ){
+			System.out.println("LIST IS EMPTY");
+			assert(false);
+		}
+		
+		for(IChange c : changes){
+			String type = c.getChangeType();
+			if(type.equals(CHANGE_ADD)){
+				String name = c.getName();
+				if(c.getName().equals("A") && !seen_a){
+					seen_a = true;
+				} else if (c.getName().equals("B") && !seen_b){
+					seen_b = true;
+				} else if(c.getName().equals("C") && !seen_c ){
+					seen_c = true;
+				} else {
+					assert(false); //Detects more changes than there should be.
+				}
+			} else {
+				assert(false); //Only additions can be allowed.
+			}
+		}
+		
+		assertEquals(true, seen_a && seen_b && seen_c); //Make sure it detected all additions.
 	}
 	
 	@Test
@@ -26,11 +71,9 @@ public class ChangeDistillerTest1 extends ChangeDistillerBaseTest{
 		// rev 2: Class A
 		this.doCommit();
 		this.runDistiller();
-		/*assertEquals(3, ChangeExtractor.newFile);
-		assertEquals(2, ChangeExtractor.deletedFile);
-		assertEquals(0, ChangeExtractor.modifiedFile);*/
+		
 	}
-	/*
+	
 	@Test
 	public void testnewMethod(){
 		this.setResourceDir("/test3");
@@ -38,9 +81,9 @@ public class ChangeDistillerTest1 extends ChangeDistillerBaseTest{
 		// rev 2: Class A with method X
 		this.doCommit();
 		this.runDistiller();
-		assertEquals(1, ChangeExtractor.newFile);
+		/*assertEquals(1, ChangeExtractor.newFile);
 		assertEquals(0, ChangeExtractor.deletedFile);
-		assertEquals(1, ChangeExtractor.modifiedFile);
-	}*/
+		assertEquals(1, ChangeExtractor.modifiedFile);*/
+	}
 	
 }
