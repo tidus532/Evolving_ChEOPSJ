@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.junit.Test;
+import static org.junit.Assert.*;
 import be.ac.ua.ansymo.cheopsj.model.ModelManager;
 import be.ac.ua.ansymo.cheopsj.model.changes.IChange;
 
@@ -16,18 +17,15 @@ public class ChangeDistillerTest1 extends ChangeDistillerBaseTest{
 	
 	@Test
 	public void test3newClasses(){
-		this.setResourceDir("/test1");
 		// rev 1: class A
 		// rev 2: Class A, Class B
 		// rev 3: Class A, class B, Class C
+		
+		//Setup repo.
+		this.setResourceDir("/test1");
 		this.doCommit();
 		this.runDistiller();
-		try {
-			Thread.sleep(10000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
 		//Check the model for all changes.
 		boolean seen_a = false;
 		boolean seen_b = false;
@@ -36,13 +34,13 @@ public class ChangeDistillerTest1 extends ChangeDistillerBaseTest{
 		ModelManager manager = ModelManager.getInstance();
 		List<IChange> changes = manager.getChanges();
 		HashMap<?,?> map = (HashMap<?, ?>) manager.famixClassesMap;
-		System.out.println("MAP SIZE:"+map.size());
-		boolean test = manager.famixClassExists("A");
-		if(changes.size() == 0 ){
-			System.out.println("LIST IS EMPTY");
-			assert(false);
+		
+		//Check that there are the required number of changes.
+		if(changes.size() != 3 ){
+			fail("Incorrect amount of changes detected");
 		}
 		
+		//Check that each change is present.
 		for(IChange c : changes){
 			String type = c.getChangeType();
 			if(type.equals(CHANGE_ADD)){
@@ -54,13 +52,12 @@ public class ChangeDistillerTest1 extends ChangeDistillerBaseTest{
 				} else if(c.getName().equals("C") && !seen_c ){
 					seen_c = true;
 				} else {
-					assert(false); //Detects more changes than there should be.
+					fail("Found an incorrect addition."); //Detects more changes than there should be.
 				}
 			} else {
-				assert(false); //Only additions can be allowed.
+				fail("Found an incorrect change type"); //Only additions can be allowed.
 			}
-		}
-		
+		}	
 		assertEquals(true, seen_a && seen_b && seen_c); //Make sure it detected all additions.
 	}
 	
@@ -72,8 +69,18 @@ public class ChangeDistillerTest1 extends ChangeDistillerBaseTest{
 		this.doCommit();
 		this.runDistiller();
 		
+		ModelManager manager = ModelManager.getInstance();
+		List<IChange> changes = manager.getChanges();
+		HashMap<?,?> map = (HashMap<?, ?>) manager.famixClassesMap;
+		
+		//Check that there are the required number of changes.
+		if(changes.size() != 5 ){
+			fail("Incorrect amount of changes detected ("+changes.size()+")");
+		}
+		
 	}
 	
+	/*
 	@Test
 	public void testnewMethod(){
 		this.setResourceDir("/test3");
@@ -83,7 +90,7 @@ public class ChangeDistillerTest1 extends ChangeDistillerBaseTest{
 		this.runDistiller();
 		/*assertEquals(1, ChangeExtractor.newFile);
 		assertEquals(0, ChangeExtractor.deletedFile);
-		assertEquals(1, ChangeExtractor.modifiedFile);*/
-	}
+		assertEquals(1, ChangeExtractor.modifiedFile);
+	}*/
 	
 }

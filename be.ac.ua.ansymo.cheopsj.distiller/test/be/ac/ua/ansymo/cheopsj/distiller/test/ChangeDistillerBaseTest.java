@@ -48,13 +48,15 @@ import org.apache.commons.io.FileUtils;
 //import be.ac.ua.ansymo.cheopsj.distiller.popup.actions.ChangeExtractor;
 import be.ac.ua.ansymo.cheopsj.distiller.popup.actions.DistillChanges;
 import be.ac.ua.ansymo.cheopsj.logger.JavaProjectHelper;
+import be.ac.ua.ansymo.cheopsj.model.ModelManager;
 
 public class ChangeDistillerBaseTest extends TestCase{
-	protected static String REPO_PATH = "/tmp/svn-test-repo";
-	protected static String REPO_LOCAL_PATH = null;
-	private static String RES_DIR = null;
+	protected String REPO_PATH = "/tmp/svn-test-repo";
+	protected String REPO_LOCAL_PATH = null;
+	private String RES_DIR = null;
 	private IJavaProject jproject = null;
 	
+	@Before
 	public void setUp() {
 		// Init SVN lib
 		SVNRepositoryFactoryImpl.setup(); // for svn and svn+ssh protocols
@@ -97,18 +99,27 @@ public class ChangeDistillerBaseTest extends TestCase{
 		//ChangeExtractor ce = new ChangeExtractor();
 	}
 
+	@After
 	public void tearDown() {
 		//ChangeExtractor.resetCounters();
 		File repo_dir = new File(REPO_PATH);
 		File local_dir = new File(REPO_LOCAL_PATH);
+		try {
+			jproject.getProject().delete(true, true, null);
+		} catch (CoreException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		// delete repository and local working copy.
 		try {
-			//FileUtils.deleteDirectory(local_dir);
 			FileUtils.deleteDirectory(repo_dir);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		//Clear the model for the next test.
+		ModelManager.getInstance().clearModel();
 		System.out.println("=============");
 	}
 
@@ -177,7 +188,7 @@ public class ChangeDistillerBaseTest extends TestCase{
 		Bundle bundle = Platform.getBundle("be.ac.ua.ansymo.cheopsj.distiller");
 		java.net.URL fileURL = bundle.getEntry("resources/"+RES_DIR);
 		File res_loc = null;
-		String file = fileURL.toString();
+		//String file = fileURL.toString();
 		try {
 			res_loc = new File(FileLocator.resolve(fileURL).toURI());
 		} catch (URISyntaxException e1) {
