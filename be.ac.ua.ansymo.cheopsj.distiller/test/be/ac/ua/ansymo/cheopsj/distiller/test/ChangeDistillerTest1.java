@@ -15,6 +15,7 @@ public class ChangeDistillerTest1 extends ChangeDistillerBaseTest {
 	private final static String CHANGE_MOD = "Modification";
 	private final static String CHANGE_DEL = "Removal";
 	private final static String FAMIX_CLASS = "Class";
+	private final static String FAMIX_METHOD = "Method";
 
 	@Test
 	public void test3newClasses() {
@@ -46,11 +47,14 @@ public class ChangeDistillerTest1 extends ChangeDistillerBaseTest {
 			String type = c.getChangeType();
 			if (type.equals(CHANGE_ADD)) {
 				String name = c.getName();
-				if (c.getName().equals("A") && c.getFamixType().equals(FAMIX_CLASS) && !seen_a) {
+				if (c.getName().equals("A")
+						&& c.getFamixType().equals(FAMIX_CLASS) && !seen_a) {
 					seen_a = true;
-				} else if (c.getName().equals("B") && !seen_b && c.getFamixType().equals(FAMIX_CLASS)) {
+				} else if (c.getName().equals("B") && !seen_b
+						&& c.getFamixType().equals(FAMIX_CLASS)) {
 					seen_b = true;
-				} else if (c.getName().equals("C") && !seen_c && c.getFamixType().equals(FAMIX_CLASS)) {
+				} else if (c.getName().equals("C") && !seen_c
+						&& c.getFamixType().equals(FAMIX_CLASS)) {
 					seen_c = true;
 				} else {
 					fail("Found an incorrect addition."); // Detects more
@@ -94,11 +98,14 @@ public class ChangeDistillerTest1 extends ChangeDistillerBaseTest {
 			String type = c.getChangeType();
 			if (type.equals(CHANGE_ADD)) {
 				String name = c.getName();
-				if (c.getName().equals("A") && !seen_a && c.getFamixType().equals(FAMIX_CLASS)) {
+				if (c.getName().equals("A") && !seen_a
+						&& c.getFamixType().equals(FAMIX_CLASS)) {
 					seen_a = true;
-				} else if (c.getName().equals("B") && !seen_b && c.getFamixType().equals(FAMIX_CLASS)) {
+				} else if (c.getName().equals("B") && !seen_b
+						&& c.getFamixType().equals(FAMIX_CLASS)) {
 					seen_b = true;
-				} else if (c.getName().equals("C") && !seen_c && c.getFamixType().equals(FAMIX_CLASS)) {
+				} else if (c.getName().equals("C") && !seen_c
+						&& c.getFamixType().equals(FAMIX_CLASS)) {
 					seen_c = true;
 				} else {
 					fail("Found an incorrect addition."); // Detects more
@@ -108,11 +115,13 @@ public class ChangeDistillerTest1 extends ChangeDistillerBaseTest {
 			}
 
 			else if (type.equals(CHANGE_DEL)) {
-				if (c.getName().equals("B") && !b_removed && c.getFamixType().equals(FAMIX_CLASS)) {
+				if (c.getName().equals("B") && !b_removed
+						&& c.getFamixType().equals(FAMIX_CLASS)) {
 					b_removed = true;
 				}
 
-				else if (c.getName().equals("C") && !c_removed && c.getFamixType().equals(FAMIX_CLASS)) {
+				else if (c.getName().equals("C") && !c_removed
+						&& c.getFamixType().equals(FAMIX_CLASS)) {
 					c_removed = true;
 				}
 
@@ -136,13 +145,45 @@ public class ChangeDistillerTest1 extends ChangeDistillerBaseTest {
 
 	@Test
 	public void testnewMethod() {
-		this.setResourceDir("/test3"); 
-		// rev1: Class A empty 
-		// rev 2: Class A						
+		this.setResourceDir("/test3");
+		// rev1: Class A empty
+		// rev 2: Class A
 		// with method X
 		this.doCommit();
 		this.runDistiller();
-	
+
+		ModelManager manager = ModelManager.getInstance();
+		List<IChange> changes = manager.getChanges();
+		HashMap<?, ?> map = (HashMap<?, ?>) manager.famixClassesMap;
+
+		// Check that there are the required number of changes.
+		if (changes.size() != 2) {
+			fail("Incorrect amount of changes detected (" + changes.size()
+					+ ")");
+		}
+
+		boolean seen_a = false;
+		boolean seen_method = false;
+
+		for (IChange c : changes) {
+			String type = c.getChangeType();
+			if (type.equals(CHANGE_ADD)) {
+				String name = c.getName();
+				if (c.getName().equals("A") && !seen_a
+						&& c.getFamixType().equals(FAMIX_CLASS)) {
+					seen_a = true;
+				} else if (c.getName().equals("A.Hello") && !seen_method
+						&& c.getFamixType().equals(FAMIX_METHOD)) {
+					seen_method = true;
+				} else {
+					fail("Found an incorrect addition."); // Detects more
+															// changes than
+															// there should be.
+				}
+			}
+		}
+		
+		assertTrue(seen_a && seen_method);
 	}
 
 }
