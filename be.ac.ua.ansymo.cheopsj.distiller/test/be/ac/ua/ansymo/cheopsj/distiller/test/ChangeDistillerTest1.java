@@ -126,7 +126,7 @@ public class ChangeDistillerTest1 extends ChangeDistillerBaseTest {
 				}
 
 				else {
-					fail("Found an incorrect addition.");
+					fail("Found an incorrect deletion.");
 				}
 
 			} else {
@@ -180,10 +180,51 @@ public class ChangeDistillerTest1 extends ChangeDistillerBaseTest {
 															// changes than
 															// there should be.
 				}
+			} else {
+				fail("Found an incorrect change type.");
 			}
 		}
-		
+
 		assertTrue(seen_a && seen_method);
+	}
+
+	@Test
+	public void testMethodRemoval() {
+		this.setResourceDir("/test4");
+		this.doCommit();
+		this.runDistiller();
+
+		ModelManager manager = ModelManager.getInstance();
+		List<IChange> changes = manager.getChanges();
+		HashMap<?, ?> map = (HashMap<?, ?>) manager.famixClassesMap;
+
+		// Check that there are the required number of changes.
+		if (changes.size() != 3) {
+			fail("Incorrect amount of changes detected (" + changes.size()
+					+ ")");
+		}
+
+		int changeCount = 0;
+		boolean seen_del = false;
+		// Check for removal of method.
+		for (IChange c : changes) {
+			String type = c.getChangeType();
+			if (type.equals(CHANGE_DEL)) {
+				if(c.getName().equals("A.Hello") && !seen_del
+						&& c.getFamixType().equals(FAMIX_METHOD)){
+					seen_del = true;
+				} else {
+					fail("Found incorrect deletion");
+				}
+			} else if (type.equals(CHANGE_ADD)) {
+				changeCount++;
+			} else {
+				fail("Found an incorrect change type.");
+			}
+		}
+
+		assertEquals(2, changeCount);
+		assertTrue(seen_del);
 	}
 
 }
