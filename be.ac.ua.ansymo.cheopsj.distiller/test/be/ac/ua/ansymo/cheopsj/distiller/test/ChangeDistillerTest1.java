@@ -16,6 +16,7 @@ public class ChangeDistillerTest1 extends ChangeDistillerBaseTest {
 	private final static String CHANGE_DEL = "Removal";
 	private final static String FAMIX_CLASS = "Class";
 	private final static String FAMIX_METHOD = "Method";
+	private final static String FAMIX_ATTRIBUTE = "Attribute";
 
 	@Test
 	public void test3newClasses() {
@@ -210,8 +211,8 @@ public class ChangeDistillerTest1 extends ChangeDistillerBaseTest {
 		for (IChange c : changes) {
 			String type = c.getChangeType();
 			if (type.equals(CHANGE_DEL)) {
-				if(c.getName().equals("A.Hello") && !seen_del
-						&& c.getFamixType().equals(FAMIX_METHOD)){
+				if (c.getName().equals("A.Hello") && !seen_del
+						&& c.getFamixType().equals(FAMIX_METHOD)) {
 					seen_del = true;
 				} else {
 					fail("Found incorrect deletion");
@@ -227,4 +228,83 @@ public class ChangeDistillerTest1 extends ChangeDistillerBaseTest {
 		assertTrue(seen_del);
 	}
 
+	@Test
+	public void testAttributeAddidion() {
+		this.setResourceDir("/test5");
+		this.doCommit();
+		this.runDistiller();
+
+		ModelManager manager = ModelManager.getInstance();
+		List<IChange> changes = manager.getChanges();
+		HashMap<?, ?> map = (HashMap<?, ?>) manager.famixClassesMap;
+
+		// Check that there are the required number of changes.
+		if (changes.size() != 2) {
+			fail("Incorrect amount of changes detected (" + changes.size()
+					+ ")");
+		}
+
+		boolean seen_attr = false;
+		int changeCount = 0;
+		// Check for removal of method.
+		for (IChange c : changes) {
+			String type = c.getChangeType();
+			if (type.equals(CHANGE_ADD)) {
+				if (c.getName().equals("A.test : int") && !seen_attr
+						&& c.getFamixType().equals(FAMIX_ATTRIBUTE)) {
+					seen_attr = true;
+				} else {
+					changeCount++;
+				}
+			} else {
+				fail("Found an incorrect change type.");
+			}
+		}
+
+		assertEquals(1, changeCount);
+		assertTrue(seen_attr);
+	}
+
+	@Test
+	public void testAttributeRemoval() {
+		this.setResourceDir("/test6");
+		this.doCommit();
+		this.runDistiller();
+
+		ModelManager manager = ModelManager.getInstance();
+		List<IChange> changes = manager.getChanges();
+		HashMap<?, ?> map = (HashMap<?, ?>) manager.famixClassesMap;
+
+		// Check that there are the required number of changes.
+		if (changes.size() != 4) {
+			fail("Incorrect amount of changes detected (" + changes.size()
+					+ ")");
+		}
+
+		boolean seen_attr = false;
+		int changeCount = 0;
+		// Check for removal of method.
+		for (IChange c : changes) {
+			String type = c.getChangeType();
+			System.out.println(type);
+			if (type.equals(CHANGE_DEL)) {
+				if (c.getName().equals("test.A.test : int") && !seen_attr
+						&& c.getFamixType().equals(FAMIX_ATTRIBUTE)) {
+					seen_attr = true;
+				}
+			} else if (type.equals(CHANGE_ADD)) {
+				changeCount++;
+			} else {
+				fail("Found an incorrect change type.");
+			}
+		}
+
+		assertEquals(3, changeCount);
+		assertTrue(seen_attr);
+	}
+
+	@Test
+	public void testMixed() {
+
+	}
 }
