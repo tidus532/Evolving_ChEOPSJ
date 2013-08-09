@@ -86,8 +86,9 @@ public class ClassRecorder extends AbstractEntityRecorder {
 		//set the flags
 		flags = declaration.getFlags();
 		
-		String superclassname = declaration.getSuperclass().getFullyQualifiedName();
-		System.out.println(superclassname);
+		//DAAN: DEPRICATED In the JLS3 API, this method is replaced by getSuperclassType(), which returns a Type instead of a Name.
+		//String superclassname = declaration.getSuperclass().getFullyQualifiedName();
+		//System.out.println(superclassname);
 		
 	}
 

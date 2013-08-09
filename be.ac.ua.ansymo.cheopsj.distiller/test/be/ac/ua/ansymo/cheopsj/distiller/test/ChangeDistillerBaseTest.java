@@ -51,7 +51,7 @@ import be.ac.ua.ansymo.cheopsj.logger.JavaProjectHelper;
 import be.ac.ua.ansymo.cheopsj.model.ModelManager;
 
 public class ChangeDistillerBaseTest extends TestCase{
-	protected String REPO_PATH = "/tmp/svn-test-repo";
+	protected String REPO_PATH = "C:\\Users\\Daan\\workspace\\temp\\svn-test-repo";
 	protected String REPO_LOCAL_PATH = null;
 	private String RES_DIR = null;
 	private IJavaProject jproject = null;

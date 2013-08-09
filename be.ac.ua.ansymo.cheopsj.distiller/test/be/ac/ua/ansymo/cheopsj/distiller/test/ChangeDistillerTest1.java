@@ -17,7 +17,54 @@ public class ChangeDistillerTest1 extends ChangeDistillerBaseTest {
 	private final static String FAMIX_CLASS = "Class";
 	private final static String FAMIX_METHOD = "Method";
 	private final static String FAMIX_ATTRIBUTE = "Attribute";
+	private final static String FAMIX_PACKAGE = "Package";
+	
+	
+	/*public void perform(List<IChange> changes,String[][] requiredChanges){
+		int i = 0;
+		for (IChange c : changes) {
+			String type = c.getChangeType();
+			System.out.println("TYPE: " + type);
+			if (type.equals(requiredChanges[i][0])){
+				String name = c.getName();
+				System.out.println("NAME: " + name);
+				if ( ! (c.getName().equals(requiredChanges[i][1]) && c.getFamixType().equals(requiredChanges[i][2])) ){
+					fail("Found an incorrect element");
+				}
+			}else{
+				fail("Found an incorrect change type");
+			}
+			i++;
+		}
+	}*/
 
+	public void perform(List<IChange> changes,String[][] requiredChanges){
+		int size = changes.size();
+		boolean seenArray[] = new boolean[size];
+		for (IChange c : changes) {
+			String type = c.getChangeType();
+			System.out.println(type);
+			System.out.println(c.getName());
+			System.out.println(c.getFamixType());
+			for(int j=0; j < requiredChanges.length; j++){
+				if (type.equals(requiredChanges[j][0]) && (c.getName().equals(requiredChanges[j][1]) && c.getFamixType().equals(requiredChanges[j][2])) ){
+					if(seenArray[j] == true){
+						fail("Already seen that element!");
+					}else{
+						seenArray[j] = true;
+					}
+				}
+			}
+		}
+		for(int j=0; j < seenArray.length; j++){
+			if(seenArray[j] == false){
+				fail("Not all changes were seen!");
+			}
+			
+		}
+		
+	}
+		
 	@Test
 	public void test3newClasses() {
 		// rev 1: class A
@@ -30,45 +77,19 @@ public class ChangeDistillerTest1 extends ChangeDistillerBaseTest {
 		this.runDistiller();
 
 		// Check the model for all changes.
-		boolean seen_a = false;
-		boolean seen_b = false;
-		boolean seen_c = false;
 
 		ModelManager manager = ModelManager.getInstance();
 		List<IChange> changes = manager.getChanges();
-		HashMap<?, ?> map = (HashMap<?, ?>) manager.famixClassesMap;
+		
 
 		// Check that there are the required number of changes.
 		if (changes.size() != 3) {
 			fail("Incorrect amount of changes detected");
 		}
-
-		// Check that each change is present.
-		for (IChange c : changes) {
-			String type = c.getChangeType();
-			if (type.equals(CHANGE_ADD)) {
-				String name = c.getName();
-				if (c.getName().equals("A")
-						&& c.getFamixType().equals(FAMIX_CLASS) && !seen_a) {
-					seen_a = true;
-				} else if (c.getName().equals("B") && !seen_b
-						&& c.getFamixType().equals(FAMIX_CLASS)) {
-					seen_b = true;
-				} else if (c.getName().equals("C") && !seen_c
-						&& c.getFamixType().equals(FAMIX_CLASS)) {
-					seen_c = true;
-				} else {
-					fail("Found an incorrect addition."); // Detects more
-															// changes than
-															// there should be.
-				}
-			} else {
-				fail("Found an incorrect change type"); // Only additions can be
-														// allowed.
-			}
-		}
-		assertTrue(seen_a && seen_b && seen_c); // Make sure it detected
-												// all additions.
+		
+		String[][] requiredChanges = { {CHANGE_ADD,"A",FAMIX_CLASS}, {CHANGE_ADD,"B",FAMIX_CLASS}, {CHANGE_ADD,"C",FAMIX_CLASS}};
+		perform(changes, requiredChanges);
+		
 	}
 
 	@Test
@@ -81,7 +102,7 @@ public class ChangeDistillerTest1 extends ChangeDistillerBaseTest {
 
 		ModelManager manager = ModelManager.getInstance();
 		List<IChange> changes = manager.getChanges();
-		HashMap<?, ?> map = (HashMap<?, ?>) manager.famixClassesMap;
+		
 
 		// Check that there are the required number of changes.
 		if (changes.size() != 5) {
@@ -89,59 +110,9 @@ public class ChangeDistillerTest1 extends ChangeDistillerBaseTest {
 					+ ")");
 		}
 		// Check that each change is present.
-		boolean seen_a = false;
-		boolean seen_b = false;
-		boolean seen_c = false;
-		boolean b_removed = false;
-		boolean c_removed = false;
-
-		for (IChange c : changes) {
-			String type = c.getChangeType();
-			if (type.equals(CHANGE_ADD)) {
-				String name = c.getName();
-				if (c.getName().equals("A") && !seen_a
-						&& c.getFamixType().equals(FAMIX_CLASS)) {
-					seen_a = true;
-				} else if (c.getName().equals("B") && !seen_b
-						&& c.getFamixType().equals(FAMIX_CLASS)) {
-					seen_b = true;
-				} else if (c.getName().equals("C") && !seen_c
-						&& c.getFamixType().equals(FAMIX_CLASS)) {
-					seen_c = true;
-				} else {
-					fail("Found an incorrect addition."); // Detects more
-															// changes than
-															// there should be.
-				}
-			}
-
-			else if (type.equals(CHANGE_DEL)) {
-				if (c.getName().equals("B") && !b_removed
-						&& c.getFamixType().equals(FAMIX_CLASS)) {
-					b_removed = true;
-				}
-
-				else if (c.getName().equals("C") && !c_removed
-						&& c.getFamixType().equals(FAMIX_CLASS)) {
-					c_removed = true;
-				}
-
-				else {
-					fail("Found an incorrect deletion.");
-				}
-
-			} else {
-				fail("Found an incorrect change type"); // Only additions can be
-														// allowed.
-			}
-
-		}
-		assertTrue(seen_a && seen_b && seen_c && b_removed && c_removed); // Make
-																			// sure
-																			// it
-																			// detected
-		// all additions.
-
+		String[][] requiredChanges = { {CHANGE_ADD,"A",FAMIX_CLASS}, {CHANGE_ADD,"B",FAMIX_CLASS}, {CHANGE_ADD,"C",FAMIX_CLASS}
+		,{CHANGE_DEL,"B",FAMIX_CLASS}, {CHANGE_DEL,"C",FAMIX_CLASS}};
+		perform(changes, requiredChanges);
 	}
 
 	@Test
@@ -149,162 +120,119 @@ public class ChangeDistillerTest1 extends ChangeDistillerBaseTest {
 		this.setResourceDir("/test3");
 		// rev1: Class A empty
 		// rev 2: Class A
-		// with method X
+		// with method Hello
 		this.doCommit();
 		this.runDistiller();
 
 		ModelManager manager = ModelManager.getInstance();
 		List<IChange> changes = manager.getChanges();
-		HashMap<?, ?> map = (HashMap<?, ?>) manager.famixClassesMap;
-
+		
 		// Check that there are the required number of changes.
 		if (changes.size() != 2) {
 			fail("Incorrect amount of changes detected (" + changes.size()
 					+ ")");
 		}
-
-		boolean seen_a = false;
-		boolean seen_method = false;
-
-		for (IChange c : changes) {
-			String type = c.getChangeType();
-			if (type.equals(CHANGE_ADD)) {
-				String name = c.getName();
-				if (c.getName().equals("A") && !seen_a
-						&& c.getFamixType().equals(FAMIX_CLASS)) {
-					seen_a = true;
-				} else if (c.getName().equals("A.Hello") && !seen_method
-						&& c.getFamixType().equals(FAMIX_METHOD)) {
-					seen_method = true;
-				} else {
-					fail("Found an incorrect addition."); // Detects more
-															// changes than
-															// there should be.
-				}
-			} else {
-				fail("Found an incorrect change type.");
-			}
-		}
-
-		assertTrue(seen_a && seen_method);
+		
+		String[][] requiredChanges = { {CHANGE_ADD,"A",FAMIX_CLASS}, {CHANGE_ADD,"A.Hello",FAMIX_METHOD}};
+		perform(changes, requiredChanges);
 	}
 
 	@Test
 	public void testMethodRemoval() {
 		this.setResourceDir("/test4");
+		// rev1: Class A with method Hello
+		// rev 2: Class A without method X
 		this.doCommit();
 		this.runDistiller();
 
 		ModelManager manager = ModelManager.getInstance();
 		List<IChange> changes = manager.getChanges();
-		HashMap<?, ?> map = (HashMap<?, ?>) manager.famixClassesMap;
+		
 
 		// Check that there are the required number of changes.
 		if (changes.size() != 3) {
 			fail("Incorrect amount of changes detected (" + changes.size()
 					+ ")");
 		}
+		
+		String[][] requiredChanges = { {CHANGE_ADD,"A",FAMIX_CLASS}, {CHANGE_ADD,"Hello",FAMIX_METHOD}, {CHANGE_DEL,"A.Hello",FAMIX_METHOD}};
+		perform(changes, requiredChanges);
 
-		int changeCount = 0;
-		boolean seen_del = false;
-		// Check for removal of method.
-		for (IChange c : changes) {
-			String type = c.getChangeType();
-			if (type.equals(CHANGE_DEL)) {
-				if (c.getName().equals("A.Hello") && !seen_del
-						&& c.getFamixType().equals(FAMIX_METHOD)) {
-					seen_del = true;
-				} else {
-					fail("Found incorrect deletion");
-				}
-			} else if (type.equals(CHANGE_ADD)) {
-				changeCount++;
-			} else {
-				fail("Found an incorrect change type.");
-			}
-		}
-
-		assertEquals(2, changeCount);
-		assertTrue(seen_del);
 	}
 
 	@Test
 	public void testAttributeAddidion() {
 		this.setResourceDir("/test5");
+		// rev1: empty Class A 
+		// rev 2: Class A with attribute test and value = 10
 		this.doCommit();
 		this.runDistiller();
 
 		ModelManager manager = ModelManager.getInstance();
 		List<IChange> changes = manager.getChanges();
-		HashMap<?, ?> map = (HashMap<?, ?>) manager.famixClassesMap;
-
+		
 		// Check that there are the required number of changes.
 		if (changes.size() != 2) {
 			fail("Incorrect amount of changes detected (" + changes.size()
 					+ ")");
 		}
+		
+		String[][] requiredChanges = { {CHANGE_ADD,"A",FAMIX_CLASS}, {CHANGE_ADD,"A.test : int",FAMIX_ATTRIBUTE}};
+		perform(changes, requiredChanges);
 
-		boolean seen_attr = false;
-		int changeCount = 0;
-		// Check for removal of method.
-		for (IChange c : changes) {
-			String type = c.getChangeType();
-			if (type.equals(CHANGE_ADD)) {
-				if (c.getName().equals("A.test : int") && !seen_attr
-						&& c.getFamixType().equals(FAMIX_ATTRIBUTE)) {
-					seen_attr = true;
-				} else {
-					changeCount++;
-				}
-			} else {
-				fail("Found an incorrect change type.");
-			}
-		}
-
-		assertEquals(1, changeCount);
-		assertTrue(seen_attr);
 	}
 
 	@Test
-	public void testAttributeRemoval() {
+	public void testAttributeRemovalFromPackage() {
 		this.setResourceDir("/test6");
+		// rev1: package test Class A with attribute test and value 10
+		// rev 2: package test class A without attribute
 		this.doCommit();
 		this.runDistiller();
 
 		ModelManager manager = ModelManager.getInstance();
 		List<IChange> changes = manager.getChanges();
-		HashMap<?, ?> map = (HashMap<?, ?>) manager.famixClassesMap;
+
 
 		// Check that there are the required number of changes.
 		if (changes.size() != 4) {
 			fail("Incorrect amount of changes detected (" + changes.size()
 					+ ")");
 		}
+		
+		String[][] requiredChanges = { {CHANGE_ADD,"test",FAMIX_PACKAGE}, {CHANGE_ADD,"test.A",FAMIX_CLASS},
+				{CHANGE_ADD,"test.A.test",FAMIX_ATTRIBUTE}, {CHANGE_DEL,"test.A.test : int",FAMIX_ATTRIBUTE}};
+		perform(changes, requiredChanges);
 
-		boolean seen_attr = false;
-		int changeCount = 0;
-		// Check for removal of method.
-		for (IChange c : changes) {
-			String type = c.getChangeType();
-			System.out.println(type);
-			if (type.equals(CHANGE_DEL)) {
-				if (c.getName().equals("test.A.test : int") && !seen_attr
-						&& c.getFamixType().equals(FAMIX_ATTRIBUTE)) {
-					seen_attr = true;
-				}
-			} else if (type.equals(CHANGE_ADD)) {
-				changeCount++;
-			} else {
-				fail("Found an incorrect change type.");
-			}
-		}
-
-		assertEquals(3, changeCount);
-		assertTrue(seen_attr);
 	}
 
 	@Test
 	public void testMixed() {
 
 	}
+	
+	@Test
+	public void testnewreqchanges() {
+		// rev 1: 
+		// rev 2: Class A, Class B, Class C ,class D, class ,method Hello and class AA
+
+		// Setup repo.
+		this.setResourceDir("/test7");
+		this.doCommit();
+		this.runDistiller();
+
+		ModelManager manager = ModelManager.getInstance();
+		List<IChange> changes = manager.getChanges();
+		
+
+		// Check that there are the required number of changes.
+		if (changes.size() != 6) {
+			fail("Incorrect amount of changes detected");
+		}
+		
+		String[][] requiredChanges = { {CHANGE_ADD,"AA",FAMIX_CLASS},{CHANGE_ADD,"D",FAMIX_CLASS},{CHANGE_ADD,"Hello",FAMIX_METHOD},{CHANGE_ADD,"C",FAMIX_CLASS}, {CHANGE_ADD,"B",FAMIX_CLASS}, {CHANGE_ADD,"A",FAMIX_CLASS}};
+		perform(changes, requiredChanges);
+
+	}
+
 }
