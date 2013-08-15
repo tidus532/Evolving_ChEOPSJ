@@ -1,4 +1,4 @@
-package be.ac.ua.ansymo.cheopsj.distiller.svnconnection;
+package be.ac.ua.ansymo.cheopsj.distiller.connections;
 
 import java.util.Date;
 import java.util.Map;
