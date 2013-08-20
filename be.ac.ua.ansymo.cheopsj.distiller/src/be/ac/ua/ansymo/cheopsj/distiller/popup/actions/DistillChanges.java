@@ -48,7 +48,7 @@ import be.ac.ua.ansymo.cheopsj.model.changes.Remove;
 
 
 public class DistillChanges implements IObjectActionDelegate {
-	protected static String REPO_PATH = "file:///Users\\Detlev\\workspace\\temp\\svn-test-repo";
+	protected static String REPO_PATH = "file:///Users\\Daan\\workspace\\temp\\svn-test-repo";
 	private IProject selectedProject;
 	private SVNConnector svnConnector;
 	
