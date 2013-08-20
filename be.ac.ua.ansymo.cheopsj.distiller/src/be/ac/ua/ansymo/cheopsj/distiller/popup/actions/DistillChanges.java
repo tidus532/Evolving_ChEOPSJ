@@ -36,8 +36,10 @@ import org.tmatesoft.svn.core.SVNLogEntryPath;
 import be.ac.ua.ansymo.cheopsj.changerecorders.LocalVariableRecorder;
 import be.ac.ua.ansymo.cheopsj.changerecorders.MethodInvocationRecorder;
 import be.ac.ua.ansymo.cheopsj.distiller.cd.ChangeDistillerProxy;
+import be.ac.ua.ansymo.cheopsj.distiller.connections.RepositoryFactory;
 import be.ac.ua.ansymo.cheopsj.distiller.connections.SVNConnector;
-import be.ac.ua.ansymo.cheopsj.distiller.connections.SVNLogEntryHandler;
+import be.ac.ua.ansymo.cheopsj.distiller.connections.loghandler.RepositoryLogHandler;
+import be.ac.ua.ansymo.cheopsj.distiller.connections.loghandler.impl.SVNLogEntryHandler;
 import be.ac.ua.ansymo.cheopsj.logger.astdiffer.ASTComparator;
 import be.ac.ua.ansymo.cheopsj.model.ModelManager;
 import be.ac.ua.ansymo.cheopsj.model.changes.Add;
@@ -46,7 +48,7 @@ import be.ac.ua.ansymo.cheopsj.model.changes.Remove;
 
 
 public class DistillChanges implements IObjectActionDelegate {
-	protected static String REPO_PATH = "file:///Users\\Daan\\workspace\\temp\\svn-test-repo";
+	protected static String REPO_PATH = "file:///Users\\Detlev\\workspace\\temp\\svn-test-repo";
 	private IProject selectedProject;
 	private SVNConnector svnConnector;
 	
@@ -158,7 +160,8 @@ public class DistillChanges implements IObjectActionDelegate {
 					
 					double percent = ((double)rev/targetRev)*100;
 					monitor.subTask("from revision: " + rev + "/" + targetRev + " (" +(int)percent+ "%)");
-					SVNLogEntryHandler entryHandler = new SVNLogEntryHandler();
+					
+					RepositoryLogHandler entryHandler = RepositoryFactory.getLogEntryHandler();
 					svnConnector.getCommitMessage(file, rev + 1, entryHandler); //Lookahead at changes in next revision!
 
 					Map<?, ?> changedPaths = entryHandler.getChangedPaths();
@@ -194,7 +197,7 @@ public class DistillChanges implements IObjectActionDelegate {
 	}
 
 	private void extractChangesFromJavaFiles(long rev,
-			SVNLogEntryHandler entryHandler, Iterator<?> it) throws Exception {
+			RepositoryLogHandler entryHandler, Iterator<?> it) throws Exception {
 		@SuppressWarnings("rawtypes")
 		Map.Entry pairs = (Map.Entry)it.next();
 		String path = (String)pairs.getKey();

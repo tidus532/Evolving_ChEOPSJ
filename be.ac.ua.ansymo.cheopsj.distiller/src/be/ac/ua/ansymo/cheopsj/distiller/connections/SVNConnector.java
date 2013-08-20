@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.tmatesoft.svn.core.ISVNLogEntryHandler;
 import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNProperties;
@@ -23,6 +24,9 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNUpdateClient;
 import org.tmatesoft.svn.core.wc.SVNWCClient;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
+
+import be.ac.ua.ansymo.cheopsj.distiller.connections.loghandler.RepositoryLogHandler;
+import be.ac.ua.ansymo.cheopsj.distiller.connections.loghandler.impl.SVNLogEntryHandler;
 
 public class SVNConnector {
 	private String fSVNUrl = "file:///Users/quinten/svn/cruisecontrol"; //TODO extract url from selected project somehow
@@ -134,12 +138,12 @@ public class SVNConnector {
 		return rev;
 	}
 	
-	public void getCommitMessage(File file, long revisionNumber, SVNLogEntryHandler handler){
+	public void getCommitMessage(File file, long revisionNumber, RepositoryLogHandler entryHandler){
 		try {
 			SVNLogClient logClient = clientManager.getLogClient();
 			SVNRevision revision = SVNRevision.create(revisionNumber);
 			File[] files = {file};
-			logClient.doLog(files, revision, revision, true, true, 1, handler);
+			logClient.doLog(files, revision, revision, true, true, 1, (ISVNLogEntryHandler) entryHandler);
 		} catch (SVNException e) {
 			//e.printStackTrace();
 		}
