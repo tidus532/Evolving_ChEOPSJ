@@ -2,6 +2,7 @@ package be.ac.ua.ansymo.cheopsj.distiller.connections.connector.impl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.Properties;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.tmatesoft.svn.core.ISVNLogEntryHandler;
@@ -40,11 +41,11 @@ public class GITConnector implements RepositoryConnector {
 	/**
 	 * Constructor gets username and password to the git repository
 	 */
-	private GITConnector(String gitUserName, String gitUserPassword) {
-		fGITUserName = gitUserName;
-		fGITUserPassword = gitUserPassword;
+	private GITConnector(Properties prop) {
+		fGITUserName = prop.getProperty("GIT_username");
+		fGITUserPassword = prop.getProperty("GIT_password");
+		fGITUrl = prop.getProperty("GIT_url");
 	}
-
 
 	public void initialize(){
 		//TODO: implementation of initialize
@@ -68,13 +69,9 @@ public class GITConnector implements RepositoryConnector {
 		return "";
 	}
 	
-	public void setURL(String url){
-		this.fGITUrl = url;
-	}
-	
-	public static RepositoryConnector getConnector(String username, String password){
+	public static RepositoryConnector getConnector(Properties prop){
 		if(singleton == null){
-			singleton = new GITConnector(username,password);
+			singleton = new GITConnector(prop);
 		}
 		return singleton;
 	}

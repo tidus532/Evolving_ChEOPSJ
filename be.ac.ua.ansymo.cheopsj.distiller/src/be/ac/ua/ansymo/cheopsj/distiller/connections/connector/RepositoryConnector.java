@@ -12,5 +12,5 @@ public interface RepositoryConnector {
 	public long getCurrentRevision(File file);
 	public void getCommitMessage(File file, long revisionNumber, RepositoryLogHandler entryhandler);
 	public String getFileContents(String filePath, long revision);
-	public void setURL(String url);
+	
 }

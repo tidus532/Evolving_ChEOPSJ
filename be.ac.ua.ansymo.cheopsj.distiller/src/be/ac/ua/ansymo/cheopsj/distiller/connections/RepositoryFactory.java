@@ -14,20 +14,26 @@ import be.ac.ua.ansymo.cheopsj.distiller.connections.loghandler.impl.GITLogEntry
 import be.ac.ua.ansymo.cheopsj.distiller.connections.loghandler.impl.SVNLogEntryHandler;
 
 public class RepositoryFactory {
-	public static String config_file_path = "C:\\Users\\Detlev\\workspace\\temp\\svn-test-repo\\config.properties";
+	public static String config_file_path = "C:\\Users\\Daan\\workspace\\cheopsOfficial\\Evolving_ChEOPSJ\\Reengineering\\config.properties";
 	static private RepositoryFactory singleton;
+	private Properties prop;
 	private static String type_in_use;
-	private static String user;
-	private static String password;
+	//private static String user;
+	//private static String password;
 	
 	
-	private RepositoryFactory() {		
+	private RepositoryFactory() {	
+		fetchPropertiesFile();
+		type_in_use = prop.getProperty("type_in_use");
+		System.out.println("=============TYPE IN USE:");
+		System.out.println(type_in_use);
+		System.out.println("=============");
+		//type_in_use = "svn";
 	}
 
 	private static RepositoryFactory getFactory(){
 		if(singleton == null){
 			singleton = new RepositoryFactory();
-			fetchFromPropertiesFile();
 		}
 		return singleton;
 	}
@@ -55,17 +61,15 @@ public class RepositoryFactory {
 	
 	private RepositoryConnector instantiateConnector(){
 		if(type_in_use.equalsIgnoreCase("svn")){
-			return SVNConnector.getConnector(user, password);
+			return SVNConnector.getConnector(prop);
 		}else if(type_in_use.equalsIgnoreCase("git")){
-			return GITConnector.getConnector(user, password);
+			return GITConnector.getConnector(prop);
 		}
 		return null;
 	}
 	
-	private static void fetchFromPropertiesFile(){
-		//TODO: this
-		/*
-		Properties prop = new Properties(); 
+	private  void fetchPropertiesFile(){
+		prop = new Properties(); 
 		try {
 			prop.load(new FileInputStream(config_file_path));
 		} catch (FileNotFoundException e) {
@@ -75,13 +79,5 @@ public class RepositoryFactory {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		type_in_use = prop.getProperty("type_in_use");
-		user = prop.getProperty("user");
-		password = prop.getProperty("password");
-		*/
-		type_in_use = "svn";
-		user = "";
-		password = "";
 	}
 }

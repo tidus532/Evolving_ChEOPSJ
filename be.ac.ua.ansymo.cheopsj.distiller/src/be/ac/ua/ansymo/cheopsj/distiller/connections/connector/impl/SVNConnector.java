@@ -2,6 +2,7 @@ package be.ac.ua.ansymo.cheopsj.distiller.connections.connector.impl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.Properties;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.tmatesoft.svn.core.ISVNLogEntryHandler;
@@ -30,9 +31,9 @@ import be.ac.ua.ansymo.cheopsj.distiller.connections.loghandler.RepositoryLogHan
 import be.ac.ua.ansymo.cheopsj.distiller.connections.loghandler.impl.SVNLogEntryHandler;
 
 public class SVNConnector implements RepositoryConnector {
-	private String fSVNUrl = "file:///Users/quinten/svn/cruisecontrol"; //TODO extract url from selected project somehow
-	private String fSVNUserName = "";
-	private String fSVNUserPassword = "";
+	private String fSVNUrl; 
+	private String fSVNUserName;
+	private String fSVNUserPassword;
 	private SVNClientManager clientManager;
 	private SVNRepository repository = null;
 	static private SVNConnector singleton;
@@ -40,9 +41,10 @@ public class SVNConnector implements RepositoryConnector {
 	/**
 	 * Constructor gets username and password to the svn repository
 	 */
-	private SVNConnector(String svnUserName, String svnUserPassword) {
-		fSVNUserName = svnUserName;
-		fSVNUserPassword = svnUserPassword;
+	private SVNConnector(Properties prop) {
+		fSVNUserName = prop.getProperty("SVN_username");
+		fSVNUserPassword = prop.getProperty("SVN_password");
+		fSVNUrl = prop.getProperty("SVN_url");
 	}
 
 	/**
@@ -184,13 +186,10 @@ public class SVNConnector implements RepositoryConnector {
         return "";
 	}
 	
-	public void setURL(String url){
-		this.fSVNUrl = url;
-	}
 	
-	public static RepositoryConnector getConnector(String username, String password){
+	public static RepositoryConnector getConnector(Properties prop){
 		if(singleton == null){
-			singleton = new SVNConnector(username,password);
+			singleton = new SVNConnector(prop);
 		}
 		return singleton;
 	}
