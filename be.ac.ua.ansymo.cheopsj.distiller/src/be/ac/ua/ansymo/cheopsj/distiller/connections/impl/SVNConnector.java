@@ -1,4 +1,4 @@
-package be.ac.ua.ansymo.cheopsj.distiller.connections;
+package be.ac.ua.ansymo.cheopsj.distiller.connections.impl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -25,20 +25,22 @@ import org.tmatesoft.svn.core.wc.SVNUpdateClient;
 import org.tmatesoft.svn.core.wc.SVNWCClient;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
+import be.ac.ua.ansymo.cheopsj.distiller.connections.connections.RepositoryConnector;
 import be.ac.ua.ansymo.cheopsj.distiller.connections.loghandler.RepositoryLogHandler;
 import be.ac.ua.ansymo.cheopsj.distiller.connections.loghandler.impl.SVNLogEntryHandler;
 
-public class SVNConnector {
+public class SVNConnector implements RepositoryConnector {
 	private String fSVNUrl = "file:///Users/quinten/svn/cruisecontrol"; //TODO extract url from selected project somehow
 	private String fSVNUserName = "";
 	private String fSVNUserPassword = "";
 	private SVNClientManager clientManager;
 	private SVNRepository repository = null;
+	static private SVNConnector singleton;
 
 	/**
 	 * Constructor gets username and password to the svn repository
 	 */
-	public SVNConnector(String svnUserName, String svnUserPassword) {
+	private SVNConnector(String svnUserName, String svnUserPassword) {
 		fSVNUserName = svnUserName;
 		fSVNUserPassword = svnUserPassword;
 	}
@@ -182,8 +184,15 @@ public class SVNConnector {
         return "";
 	}
 	
-	public void setSVNURL(String url){
+	public void setURL(String url){
 		this.fSVNUrl = url;
+	}
+	
+	public static RepositoryConnector getConnector(String username, String password){
+		if(singleton == null){
+			singleton = new SVNConnector(username,password);
+		}
+		return singleton;
 	}
 
 }

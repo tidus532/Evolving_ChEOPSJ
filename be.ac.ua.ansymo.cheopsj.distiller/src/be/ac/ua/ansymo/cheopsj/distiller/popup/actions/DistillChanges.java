@@ -37,9 +37,8 @@ import be.ac.ua.ansymo.cheopsj.changerecorders.LocalVariableRecorder;
 import be.ac.ua.ansymo.cheopsj.changerecorders.MethodInvocationRecorder;
 import be.ac.ua.ansymo.cheopsj.distiller.cd.ChangeDistillerProxy;
 import be.ac.ua.ansymo.cheopsj.distiller.connections.RepositoryFactory;
-import be.ac.ua.ansymo.cheopsj.distiller.connections.SVNConnector;
+import be.ac.ua.ansymo.cheopsj.distiller.connections.connections.RepositoryConnector;
 import be.ac.ua.ansymo.cheopsj.distiller.connections.loghandler.RepositoryLogHandler;
-import be.ac.ua.ansymo.cheopsj.distiller.connections.loghandler.impl.SVNLogEntryHandler;
 import be.ac.ua.ansymo.cheopsj.logger.astdiffer.ASTComparator;
 import be.ac.ua.ansymo.cheopsj.model.ModelManager;
 import be.ac.ua.ansymo.cheopsj.model.changes.Add;
@@ -50,7 +49,7 @@ import be.ac.ua.ansymo.cheopsj.model.changes.Remove;
 public class DistillChanges implements IObjectActionDelegate {
 	protected static String REPO_PATH = "file:///Users\\Daan\\workspace\\temp\\svn-test-repo";
 	private IProject selectedProject;
-	private SVNConnector svnConnector;
+	private RepositoryConnector connector;
 	
 	private IProject getProjectForSelection(ISelection selection){
 		if(selection == null){ return null; }
@@ -136,9 +135,9 @@ public class DistillChanges implements IObjectActionDelegate {
 		try {			
 			//TODO record additions for initial project!
 			File file = new File(selectedProject.getLocationURI());
-			svnConnector = new SVNConnector("", "");
-			svnConnector.setSVNURL(REPO_PATH);
-			svnConnector.initialize();
+			connector = RepositoryFactory.getConnector();
+			connector.setURL(REPO_PATH);
+			connector.initialize();
 			
 			//long rev = svnConnector.getCurrentRevision(file);//Get current revision number.
 			//long targetRev = svnConnector.getHeadRevisionNumber(file);//total nr of revisions
@@ -146,7 +145,7 @@ public class DistillChanges implements IObjectActionDelegate {
 			
 			long rev = 0;
 			//Get current revision number.
-			long targetRev = svnConnector.getCurrentRevision(file);
+			long targetRev = connector.getCurrentRevision(file);
 			//long targetRev = 4;
 			int diff = (int) (targetRev - rev); //nr of revisions that will be processed
 			monitor.beginTask("Extracting changes", diff);
@@ -162,7 +161,7 @@ public class DistillChanges implements IObjectActionDelegate {
 					monitor.subTask("from revision: " + rev + "/" + targetRev + " (" +(int)percent+ "%)");
 					
 					RepositoryLogHandler entryHandler = RepositoryFactory.getLogEntryHandler();
-					svnConnector.getCommitMessage(file, rev + 1, entryHandler); //Lookahead at changes in next revision!
+					connector.getCommitMessage(file, rev + 1, entryHandler); //Lookahead at changes in next revision!
 
 					Map<?, ?> changedPaths = entryHandler.getChangedPaths();
 					
@@ -211,7 +210,7 @@ public class DistillChanges implements IObjectActionDelegate {
 			case SVNLogEntryPath.TYPE_ADDED: 
 				//System.out.println("ADDED: " + path);
 				//This file was added --> create addition changes for everything in this file!									
-				String addedFileContents = svnConnector.getFileContents(path, rev + 1);
+				String addedFileContents = connector.getFileContents(path, rev + 1);
 				extractor.storeClassAddition(addedFileContents);
 				extractor.storeFieldAdditions(addedFileContents);
 				extractor.storeMethodAdditions(addedFileContents);
@@ -220,7 +219,7 @@ public class DistillChanges implements IObjectActionDelegate {
 			case SVNLogEntryPath.TYPE_DELETED:
 				//System.out.println("DELETED: " + path);
 				//This file was removed --> create remove changes for everything in this file!
-				String removedFileContents = svnConnector.getFileContents(path, rev);
+				String removedFileContents = connector.getFileContents(path, rev);
 				
 				extractor.storeMethodInvocationRemovals(removedFileContents);
 				extractor.storeMethodRemoval(removedFileContents);
@@ -230,8 +229,8 @@ public class DistillChanges implements IObjectActionDelegate {
 			case SVNLogEntryPath.TYPE_MODIFIED:
 				//System.out.println("CHANGED: " + path);									
 				//This file was modified --> run evolizer.ChangeDistiller on old and new files to find out differences.
-				String targetFileContents = svnConnector.getFileContents(path, rev + 1); 
-				String sourceFileContents = svnConnector.getFileContents(path, rev);  
+				String targetFileContents = connector.getFileContents(path, rev + 1); 
+				String sourceFileContents = connector.getFileContents(path, rev);  
 				
 				ChangeDistillerProxy cd = new ChangeDistillerProxy();
 				cd.copyOldFileFrom(sourceFileContents);
@@ -282,7 +281,7 @@ public class DistillChanges implements IObjectActionDelegate {
 	}
 	
 	private void updateOneRev(File file, long rev, IProgressMonitor monitor) throws CoreException{
-		svnConnector.updateToRevision(file, rev + 1, monitor);
+		connector.updateToRevision(file, rev + 1, monitor);
 	}
 
 	@Override
