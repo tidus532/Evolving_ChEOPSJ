@@ -1,4 +1,4 @@
-package be.ac.ua.ansymo.cheopsj.distiller.connections.connections;
+package be.ac.ua.ansymo.cheopsj.distiller.connections.connector;
 
 import java.io.File;
 

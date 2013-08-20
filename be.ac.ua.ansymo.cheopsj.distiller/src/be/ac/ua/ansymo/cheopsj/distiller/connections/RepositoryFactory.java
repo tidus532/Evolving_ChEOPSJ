@@ -6,9 +6,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
-import be.ac.ua.ansymo.cheopsj.distiller.connections.connections.RepositoryConnector;
-import be.ac.ua.ansymo.cheopsj.distiller.connections.impl.GITConnector;
-import be.ac.ua.ansymo.cheopsj.distiller.connections.impl.SVNConnector;
+import be.ac.ua.ansymo.cheopsj.distiller.connections.connector.RepositoryConnector;
+import be.ac.ua.ansymo.cheopsj.distiller.connections.connector.impl.GITConnector;
+import be.ac.ua.ansymo.cheopsj.distiller.connections.connector.impl.SVNConnector;
 import be.ac.ua.ansymo.cheopsj.distiller.connections.loghandler.RepositoryLogHandler;
 import be.ac.ua.ansymo.cheopsj.distiller.connections.loghandler.impl.GITLogEntryHandler;
 import be.ac.ua.ansymo.cheopsj.distiller.connections.loghandler.impl.SVNLogEntryHandler;

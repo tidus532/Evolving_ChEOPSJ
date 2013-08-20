@@ -41,7 +41,7 @@ import be.ac.ua.ansymo.cheopsj.changerecorders.FieldRecorder;
 import be.ac.ua.ansymo.cheopsj.changerecorders.MethodInvocationRecorder;
 import be.ac.ua.ansymo.cheopsj.changerecorders.MethodRecorder;
 import be.ac.ua.ansymo.cheopsj.changerecorders.PackageRecorder;
-import be.ac.ua.ansymo.cheopsj.distiller.connections.connections.RepositoryConnector;
+import be.ac.ua.ansymo.cheopsj.distiller.connections.connector.RepositoryConnector;
 import be.ac.ua.ansymo.cheopsj.model.ModelManager;
 import be.ac.ua.ansymo.cheopsj.model.changes.Add;
 

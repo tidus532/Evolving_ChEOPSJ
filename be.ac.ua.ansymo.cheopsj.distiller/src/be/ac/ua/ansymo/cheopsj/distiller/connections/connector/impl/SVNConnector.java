@@ -1,4 +1,4 @@
-package be.ac.ua.ansymo.cheopsj.distiller.connections.impl;
+package be.ac.ua.ansymo.cheopsj.distiller.connections.connector.impl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -25,7 +25,7 @@ import org.tmatesoft.svn.core.wc.SVNUpdateClient;
 import org.tmatesoft.svn.core.wc.SVNWCClient;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
-import be.ac.ua.ansymo.cheopsj.distiller.connections.connections.RepositoryConnector;
+import be.ac.ua.ansymo.cheopsj.distiller.connections.connector.RepositoryConnector;
 import be.ac.ua.ansymo.cheopsj.distiller.connections.loghandler.RepositoryLogHandler;
 import be.ac.ua.ansymo.cheopsj.distiller.connections.loghandler.impl.SVNLogEntryHandler;
 

@@ -37,7 +37,7 @@ import be.ac.ua.ansymo.cheopsj.changerecorders.LocalVariableRecorder;
 import be.ac.ua.ansymo.cheopsj.changerecorders.MethodInvocationRecorder;
 import be.ac.ua.ansymo.cheopsj.distiller.cd.ChangeDistillerProxy;
 import be.ac.ua.ansymo.cheopsj.distiller.connections.RepositoryFactory;
-import be.ac.ua.ansymo.cheopsj.distiller.connections.connections.RepositoryConnector;
+import be.ac.ua.ansymo.cheopsj.distiller.connections.connector.RepositoryConnector;
 import be.ac.ua.ansymo.cheopsj.distiller.connections.loghandler.RepositoryLogHandler;
 import be.ac.ua.ansymo.cheopsj.logger.astdiffer.ASTComparator;
 import be.ac.ua.ansymo.cheopsj.model.ModelManager;
