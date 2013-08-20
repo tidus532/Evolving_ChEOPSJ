@@ -6,6 +6,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
+import be.ac.ua.ansymo.cheopsj.distiller.connections.connections.RepositoryConnector;
+import be.ac.ua.ansymo.cheopsj.distiller.connections.impl.GITConnector;
+import be.ac.ua.ansymo.cheopsj.distiller.connections.impl.SVNConnector;
 import be.ac.ua.ansymo.cheopsj.distiller.connections.loghandler.RepositoryLogHandler;
 import be.ac.ua.ansymo.cheopsj.distiller.connections.loghandler.impl.GITLogEntryHandler;
 import be.ac.ua.ansymo.cheopsj.distiller.connections.loghandler.impl.SVNLogEntryHandler;
@@ -14,6 +17,9 @@ public class RepositoryFactory {
 	public static String config_file_path = "C:\\Users\\Detlev\\workspace\\temp\\svn-test-repo\\config.properties";
 	static private RepositoryFactory singleton;
 	private static String type_in_use;
+	private static String user;
+	private static String password;
+	
 	
 	private RepositoryFactory() {		
 	}
@@ -32,11 +38,26 @@ public class RepositoryFactory {
 		return LEH;
 	}
 	
+	public static RepositoryConnector getConnector(){
+		RepositoryFactory factory = RepositoryFactory.getFactory();
+		RepositoryConnector RC = factory.instantiateConnector();
+		return RC;
+	}
+	
 	private RepositoryLogHandler instantiateHandler(){
 		if(type_in_use.equalsIgnoreCase("svn")){
 			return SVNLogEntryHandler.getLogEntryHandler();
 		} else if(type_in_use.equalsIgnoreCase("git")){
 			return GITLogEntryHandler.getLogEntryHandler();
+		}
+		return null;
+	}
+	
+	private RepositoryConnector instantiateConnector(){
+		if(type_in_use.equalsIgnoreCase("svn")){
+			return SVNConnector.getConnector(user, password);
+		}else if(type_in_use.equalsIgnoreCase("git")){
+			return GITConnector.getConnector(user, password);
 		}
 		return null;
 	}
@@ -55,8 +76,12 @@ public class RepositoryFactory {
 			e.printStackTrace();
 		}
 		
-		type_in_use = prop.getProperty("type_in_use");	
+		type_in_use = prop.getProperty("type_in_use");
+		user = prop.getProperty("user");
+		password = prop.getProperty("password");
 		*/
 		type_in_use = "svn";
+		user = "";
+		password = "";
 	}
 }
