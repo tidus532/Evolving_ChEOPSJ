@@ -10,11 +10,13 @@ import org.osgi.framework.Bundle;
 import junit.framework.TestCase;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.*;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Properties;
 
 import javax.print.DocFlavor.URL;
 
@@ -52,9 +54,12 @@ import be.ac.ua.ansymo.cheopsj.model.ModelManager;
 
 public class ChangeDistillerBaseTest extends TestCase{
 	protected String REPO_PATH = "C:\\Users\\Daan\\workspace\\temp\\svn-test-repo";
+	private String REPO_PATH_FOR_DISTILLER = "file:///Users\\Daan\\workspace\\temp\\svn-test-repo";
+	private String CONFIG_PATH = "C:\\Users\\Daan\\workspace\\temp\\config.properties";
 	protected String REPO_LOCAL_PATH = null;
 	private String RES_DIR = null;
 	private IJavaProject jproject = null;
+	
 	
 	@Before
 	public void setUp() {
@@ -97,6 +102,24 @@ public class ChangeDistillerBaseTest extends TestCase{
 			e1.printStackTrace();
 		}
 		//ChangeExtractor ce = new ChangeExtractor();
+		
+		//create propertiesfile
+		Properties prop = new Properties();
+    	try {
+    		//set the properties value
+    		prop.setProperty("type_in_use", "SVN");
+    		
+    		prop.setProperty("SVN_username", "");
+    		prop.setProperty("SVN_password", "");
+    		prop.setProperty("SVN_url", REPO_PATH_FOR_DISTILLER);
+
+    		//save properties to project root folder
+    		prop.store(new FileOutputStream(CONFIG_PATH), null);
+ 
+    	} catch (IOException ex) {
+    		ex.printStackTrace();
+        }
+		
 	}
 
 	@After
@@ -127,6 +150,7 @@ public class ChangeDistillerBaseTest extends TestCase{
 		
 		// Modifying distillchanges
 		DistillChanges distiller = new DistillChanges();
+		distiller.setConfigFilePath(CONFIG_PATH);
 
 		// Bypass all encapsulation, accessing private methods and fields
 		// directly.

@@ -50,6 +50,8 @@ public class DistillChanges implements IObjectActionDelegate {
 	//protected static String REPO_PATH = "file:///Users\\Daan\\workspace\\temp\\svn-test-repo";
 	private IProject selectedProject;
 	private RepositoryConnector connector;
+	private static String config_file_path = "C:\\Users\\Daan\\workspace\\cheopsOfficial\\Evolving_ChEOPSJ\\Reengineering\\config.properties";
+	
 	
 	private IProject getProjectForSelection(ISelection selection){
 		if(selection == null){ return null; }
@@ -135,7 +137,7 @@ public class DistillChanges implements IObjectActionDelegate {
 		try {			
 			//TODO record additions for initial project!
 			File file = new File(selectedProject.getLocationURI());
-			connector = RepositoryFactory.getConnector();
+			connector = RepositoryFactory.getConnector(config_file_path);
 			//connector.setURL(REPO_PATH);
 			connector.initialize();
 			
@@ -160,7 +162,7 @@ public class DistillChanges implements IObjectActionDelegate {
 					double percent = ((double)rev/targetRev)*100;
 					monitor.subTask("from revision: " + rev + "/" + targetRev + " (" +(int)percent+ "%)");
 					
-					RepositoryLogHandler entryHandler = RepositoryFactory.getLogEntryHandler();
+					RepositoryLogHandler entryHandler = RepositoryFactory.getLogEntryHandler(config_file_path);
 					connector.getCommitMessage(file, rev + 1, entryHandler); //Lookahead at changes in next revision!
 
 					Map<?, ?> changedPaths = entryHandler.getChangedPaths();
@@ -290,6 +292,10 @@ public class DistillChanges implements IObjectActionDelegate {
 
 	@Override
 	public void selectionChanged(IAction action, ISelection selection) {
+	}
+	
+	public void setConfigFilePath(String newPath){
+		config_file_path = newPath;
 	}
 
 }
