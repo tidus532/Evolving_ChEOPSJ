@@ -52,7 +52,12 @@ import be.ac.ua.ansymo.cheopsj.distiller.popup.actions.DistillChanges;
 import be.ac.ua.ansymo.cheopsj.logger.JavaProjectHelper;
 import be.ac.ua.ansymo.cheopsj.model.ModelManager;
 
-public class ChangeDistillerBaseTest extends TestCase{
+/**
+ * The RepoBase class is the basis of our Regression tests for the distiller package.
+ * In it's setUp part it sets up an SVN connection and creates a properties file that will be used
+ * by our tests. In the TearDown, this all will be removed from the system again.
+ */
+public class RepoBaseTest extends TestCase{
 	protected String REPO_PATH = "C:\\Users\\Daan\\workspace\\temp\\svn-test-repo";
 	protected String REPO_PATH_FOR_DISTILLER = "file:///Users\\Daan\\workspace\\temp\\svn-test-repo";
 	protected String CONFIG_PATH = "C:\\Users\\Daan\\workspace\\temp\\config.properties";
@@ -140,6 +145,7 @@ public class ChangeDistillerBaseTest extends TestCase{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 		
 		//Clear the model for the next test.
 		ModelManager.getInstance().clearModel();

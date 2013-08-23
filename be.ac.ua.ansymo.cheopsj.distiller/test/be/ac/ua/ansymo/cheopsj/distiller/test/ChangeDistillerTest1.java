@@ -10,7 +10,13 @@ import be.ac.ua.ansymo.cheopsj.model.changes.IChange;
 
 //import be.ac.ua.ansymo.cheopsj.distiller.popup.actions.ChangeExtractor;
 
-public class ChangeDistillerTest1 extends ChangeDistillerBaseTest {
+/**
+ * The ChangeDistillerTest1 class is our class that we used for regression testing.
+ * It tests the distiller functionality, by taking a look at the model's content after
+ * iterating over the revisions.
+ */
+
+public class ChangeDistillerTest1 extends RepoBaseTest {
 	private final static String CHANGE_ADD = "Addition";
 	private final static String CHANGE_MOD = "Modification";
 	private final static String CHANGE_DEL = "Removal";
