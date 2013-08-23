@@ -211,7 +211,7 @@ public class DistillChanges implements IObjectActionDelegate {
 			switch(logEntry.getType()){
 			case SVNLogEntryPath.TYPE_ADDED: 
 				//System.out.println("ADDED: " + path);
-				//This file was added --> create addition changes for everything in this file!									
+				//This file was added --> create addition changes for everything in this file!
 				String addedFileContents = connector.getFileContents(path, rev + 1);
 				extractor.storeClassAddition(addedFileContents);
 				extractor.storeFieldAdditions(addedFileContents);

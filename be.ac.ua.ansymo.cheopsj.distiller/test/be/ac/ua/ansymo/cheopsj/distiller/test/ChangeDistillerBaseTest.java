@@ -54,8 +54,8 @@ import be.ac.ua.ansymo.cheopsj.model.ModelManager;
 
 public class ChangeDistillerBaseTest extends TestCase{
 	protected String REPO_PATH = "C:\\Users\\Daan\\workspace\\temp\\svn-test-repo";
-	private String REPO_PATH_FOR_DISTILLER = "file:///Users\\Daan\\workspace\\temp\\svn-test-repo";
-	private String CONFIG_PATH = "C:\\Users\\Daan\\workspace\\temp\\config.properties";
+	protected String REPO_PATH_FOR_DISTILLER = "file:///Users\\Daan\\workspace\\temp\\svn-test-repo";
+	protected String CONFIG_PATH = "C:\\Users\\Daan\\workspace\\temp\\config.properties";
 	protected String REPO_LOCAL_PATH = null;
 	private String RES_DIR = null;
 	private IJavaProject jproject = null;
@@ -84,7 +84,7 @@ public class ChangeDistillerBaseTest extends TestCase{
 		try {
 			tgtURL = SVNRepositoryFactory.createLocalRepository(repo_dir, true,
 					true);
-
+			System.out.println("TGTURL=" + tgtURL);
 		} catch (SVNException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
